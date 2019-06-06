@@ -122,16 +122,6 @@ export default {
           merchantName: "John Brown",
           merchantMonth: 18,
           startTime: "2019-6-7"
-        },
-        {
-          merchantName: "John Brown",
-          merchantMonth: 18,
-          startTime: "2019-6-7"
-        },
-        {
-          merchantName: "John Brown",
-          merchantMonth: 18,
-          startTime: "2019-6-7"
         }
       ]
     };
