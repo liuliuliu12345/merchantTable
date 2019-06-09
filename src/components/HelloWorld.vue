@@ -7,6 +7,7 @@
         商品名称：
         <Input clearable
                type="text"
+               v-model="merchantName"
                style="width: 160px;"
                placeholder="请输入商品名称" />
       </div>
@@ -14,24 +15,27 @@
         商品价格：
         <Input clearable
                type="text"
+               v-model="merchantMoney"
                style="width: 160px;"
                placeholder="请输入商品价格" />
       </div>
       <div class="inlineBlock mleft20">
         购买日期：
         <DatePicker type="date"
+                    @on-change="onchangeMethod"
                     style="width: 160px"
                     placeholder="请选择购买日期"></DatePicker>
       </div>
 
       <div class="inlineBlock mleft20">
         <Button type="primary"
+                @click="saveMethod"
                 icon="ios-loading">保存</Button>
       </div>
     </div>
 
     <div class="tableBox">
-      <Card style="height: 400px">
+      <Card style="height: 482px">
         <Table stripe
                :height="screenHeight"
                :columns="columns"
@@ -57,6 +61,9 @@
         </Table>
       </Card>
     </div>
+
+    <merchant-info :showmodal.sync='isEditModules'
+                   :infoModel='selModel' />
   </div>
 </template>
 
@@ -64,6 +71,7 @@
 import { columnTable } from "./columns";
 import { Input, DatePicker, Button, Card, Table } from "iview";
 // import hello from "./hello";
+import MerchantInfo from "./merchant-info";
 export default {
   name: "HelloWorld",
   props: {
@@ -71,6 +79,7 @@ export default {
   },
   components: {
     // hello,
+    MerchantInfo,
     Input,
     DatePicker,
     Card,
@@ -79,58 +88,41 @@ export default {
   },
   data() {
     return {
-      screenHeight: 368,
+      screenHeight: 450,
+      merchantName: "",
+      merchantMoney: "",
+      startTime: "",
+      isEditModules: false,
       infoMethods: "hello,vue",
       columns: columnTable(),
-      reqDataList: [
-        {
-          merchantName: "John Brown",
-          merchantMonth: 18,
-          startTime: "2019-6-7"
-        },
-        {
-          merchantName: "John Brown",
-          merchantMonth: 18,
-          startTime: "2019-6-7"
-        },
-        {
-          merchantName: "John Brown",
-          merchantMonth: 18,
-          startTime: "2019-6-7"
-        },
-        {
-          merchantName: "John Brown",
-          merchantMonth: 18,
-          startTime: "2019-6-7"
-        },
-        {
-          merchantName: "John Brown",
-          merchantMonth: 18,
-          startTime: "2019-6-7"
-        },
-        {
-          merchantName: "John Brown",
-          merchantMonth: 18,
-          startTime: "2019-6-7"
-        },
-        {
-          merchantName: "John Brown",
-          merchantMonth: 18,
-          startTime: "2019-6-7"
-        },
-        {
-          merchantName: "John Brown",
-          merchantMonth: 18,
-          startTime: "2019-6-7"
-        }
-      ]
+      reqDataList: [],
+      selModel: {}
     };
   },
   methods: {
-    deleteData() {},
-    editOperate(index) {
-      this.data.splice(index, 1);
+    onchangeMethod(date) {
+      this.startTime = date;
+    },
+    deleteData(index) {
+      this.reqDataList.splice(index, 1);
+    },
+    editOperate(model) {
+      this.isEditModules = true;
+      this.selModel = { ...model };
+    },
+    saveMethod() {
+      let reqDataList = this.reqDataList;
+      let params = {
+        merchantName: this.merchantName,
+        merchantMoney: Number(this.merchantMoney),
+        startTime: this.startTime
+      };
+      reqDataList.push({ ...params });
+      console.log(this.reqDataList);
     }
+  },
+  created() {
+    console.log(this.reqDataList);
   }
 };
 </script>

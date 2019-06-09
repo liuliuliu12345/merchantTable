@@ -7,7 +7,7 @@ export const columnTable = () => {
     },
     {
       title: "商品价格(￥)",
-      key: "merchantMonth",
+      key: "merchantMoney",
       align: 'center'
 
     },
