@@ -10,42 +10,42 @@
             :rules="rules"
             @keydown.enter.native="save">
         <Row>
-          <i-col span="24">
-            <FormItem prop="merchantName"
-                      label="商品名称："
-                      :label-width="210">
-              <Input v-model="infoModel.merchantName"
-                     placeholder="请输入商品名称"
-                     style="width: 200px;" />
-            </FormItem>
-          </i-col>
+          <Col span="24" />
+          <FormItem prop="merchantName"
+                    label="商品名称："
+                    :label-width="210">
+            <Input v-model="infoModel.merchantName"
+                   placeholder="请输入商品名称"
+                   clearable
+                   style="width: 200px;" />
+          </FormItem>
         </Row>
+
         <Row>
-          <i-col span="24">
-            <FormItem label="商品价格："
-                      prop="merchantMoney"
-                      :label-width="210">
-              <Input v-model="infoModel.merchantMoney"
-                     placeholder="请输入商品价格"
-                     style="width: 200px;"
-                     number />
-
-            </FormItem>
-          </i-col>
-
+          <Col span="24" />
+          <FormItem label="商品价格："
+                    prop="merchantMoney"
+                    :label-width="210">
+            <Input v-model="infoModel.merchantMoney"
+                   placeholder="请输入商品价格"
+                   style="width: 200px;"
+                   clearable
+                   number />
+          </FormItem>
         </Row>
+
         <Row>
-          <i-col span="24">
-            <FormItem label="购买时间："
-                      prop="startTime"
-                      :label-width="210">
-              <Input v-model="infoModel.startTime"
-                     placeholder="请输入购买时间"
-                     style="width: 200px;" />
+          <Col span="24" />
+          <FormItem label="购买时间："
+                    prop="startTime"
+                    :label-width="210">
+            <DatePicker type="date"
+                        v-model="startTime"
+                        @on-change="onchangeMethod"
+                        style="width: 200px"
+                        placeholder="请选择购买日期"></DatePicker>
 
-            </FormItem>
-          </i-col>
-
+          </FormItem>
         </Row>
 
       </Form>
@@ -61,7 +61,7 @@
 </template>
 
 <script>
-import { Modal, Button, Input, Form, Row, FormItem } from "iview";
+import { Modal, Button, Input, Form, Row, FormItem, DatePicker } from "iview";
 export default {
   name: "merchantInfo",
   components: {
@@ -70,7 +70,8 @@ export default {
     Input,
     Form,
     Row,
-    FormItem
+    FormItem,
+    DatePicker
   },
   props: {
     showmodal: {
@@ -85,8 +86,26 @@ export default {
     }
   },
   data() {
+    const validateMoney = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error("请输入商品价格"));
+      } else if (!Number.isInteger(+value)) {
+        callback(new Error("不要输入除数字以外的字符"));
+      } else {
+        callback();
+      }
+    };
+    const validateTime = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error("请输入购买日期"));
+      } else {
+        callback();
+      }
+    };
+
     return {
       showmodalBind: this.showmodal,
+      startTime: "",
       modalTitle: "修改账户信息",
       save_loading: false,
       rules: {
@@ -100,16 +119,16 @@ export default {
         merchantMoney: [
           {
             required: true,
-            message: "请输入商户价格",
             trigger: "blur",
-            type: "number"
+            type: "number",
+            validator: validateMoney
           }
         ],
         startTime: [
           {
             required: true,
-            message: "请输入购买时间",
-            trigger: "blur"
+            trigger: "change",
+            validator: validateTime
           }
         ]
       }
@@ -127,11 +146,17 @@ export default {
     infoModel: {
       handler(val) {
         console.log(val);
+        this.startTime = val.startTime;
       },
       deep: true
     }
   },
   methods: {
+    onchangeMethod(date) {
+      this.startTime = date;
+      this.infoModel.startTime = date;
+    },
+
     save() {
       this.$refs.modalForm.validate(valid => {
         if (valid) {

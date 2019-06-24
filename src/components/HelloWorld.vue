@@ -22,20 +22,29 @@
       <div class="inlineBlock mleft20">
         购买日期：
         <DatePicker type="date"
+                    v-model="startTime"
                     @on-change="onchangeMethod"
                     style="width: 160px"
                     placeholder="请选择购买日期"></DatePicker>
       </div>
 
       <div class="inlineBlock mleft20">
-        <Button type="primary"
+        <Button type="info"
                 @click="saveMethod"
                 icon="ios-loading">保存</Button>
+        <!-- <Button class="mleft20"
+                type="primary"
+                @click="searchMethod"
+                icon="md-search">查询</Button> -->
+        <Button class="mleft20"
+                type="warning"
+                @click="clearMethod"
+                icon="ios-trash-outline">清空</Button>
       </div>
     </div>
 
     <div class="tableBox">
-      <Card style="height: 482px">
+      <Card style="height: 462px">
         <Table stripe
                :height="screenHeight"
                :columns="columns"
@@ -88,7 +97,7 @@ export default {
   },
   data() {
     return {
-      screenHeight: 450,
+      screenHeight: 430,
       merchantName: "",
       merchantMoney: "",
       startTime: "",
@@ -100,6 +109,12 @@ export default {
     };
   },
   methods: {
+    clearMethod() {
+      this.merchantName = "";
+      this.merchantMoney = "";
+      this.startTime = "";
+    },
+
     onchangeMethod(date) {
       this.startTime = date;
     },
@@ -110,19 +125,38 @@ export default {
       this.isEditModules = true;
       this.selModel = { ...model };
     },
+
+    // searchMethod() {},
+
     saveMethod() {
-      let reqDataList = this.reqDataList;
-      let params = {
-        merchantName: this.merchantName,
-        merchantMoney: Number(this.merchantMoney),
-        startTime: this.startTime
-      };
-      reqDataList.push({ ...params });
-      console.log(this.reqDataList);
+      let merchantName = this.merchantName;
+      let merchantMoney = this.merchantMoney;
+      let startTime = this.startTime;
+      if (merchantName && merchantMoney && startTime) {
+        // let reqDataList = this.reqDataList;
+        let params = {
+          merchantName: merchantName,
+          merchantMoney: merchantMoney,
+          startTime: startTime
+        };
+        localStorage.setItem("reqDataList", JSON.stringify([{ ...params }]));
+        let data = JSON.parse(localStorage.getItem("reqDataList"));
+        data.map(item => {
+          let obj = item;
+          this.reqDataList.push(obj);
+        });
+      }
     }
   },
   created() {
-    console.log(this.reqDataList);
+    let data = localStorage.getItem("reqDataList");
+    if (data) {
+      let dateMap = JSON.parse(data);
+      dateMap.map(item => {
+        let obj = item;
+        this.reqDataList.push(obj);
+      });
+    }
   }
 };
 </script>
